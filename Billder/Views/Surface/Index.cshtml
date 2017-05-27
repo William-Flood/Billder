@@ -1,0 +1,1071 @@
+﻿@model Billder.Models.SplinePage
+
+@{
+    ViewBag.Title = "Billder";
+}
+
+<h2>Index</h2>
+<p>@ViewBag.Error</p>
+<form method="get">
+    <select name="splineName">
+       @foreach (var splineName in Model.SurfaceNames)
+       {
+           <option @if (splineName.Equals(Model.CurrentSurface.SplineName)) { @: selected="selected"
+                                       } value="@splineName">
+               @splineName
+                                   </option>
+       }
+    </select>
+    <input type="submit" value="Load" name="load" />
+</form>
+<canvas id="berzierDrawer" width="200" height="200"></canvas><br />
+<form method="post">
+    <span class="labelWrapperOne"><label for="xOne">xOne</label></span><input class="coord" type="number" id="xOne" name="xOne" value="@Model.VertexOne.X" /><span class="labelWrapperOne"><label for="yOne">yOne</label></span><input type="number" class="coord" id="yOne" name="yOne" value="@Model.VertexOne.Y" /><span class="labelWrapperOne"><label for="zOne">zOne</label></span><input type="number" class="coord" id="zOne" name="zOne" value="@Model.VertexOne.Z" /><span class="labelWrapperTwo"><label for="aOneOne">aOneOne</label></span><input type="number" class="coord" id="aOneOne" name="aOneOne" value="@Model.VertexOne.AOne" /><span class="labelWrapperTwo"><label for="bOneOne">bOneOne</label></span><input type="number" class="coord" id="bOneOne" name="bOneOne" value="@Model.VertexOne.BOne" /><span class="labelWrapperTwo"><label for="cOneOne">cOneOne</label></span><input type="number" class="coord" id="cOneOne" name="cOneOne" value="@Model.VertexOne.COne" /><span class="labelWrapperTwo"><label for="aOneTwo">aOneTwo</label></span><input type="number" class="coord" id="aOneTwo" name="aOneTwo" value="@Model.VertexOne.ATwo" /><span class="labelWrapperTwo"><label for="bOneTwo">bOneTwo</label></span><input type="number" class="coord" id="bOneTwo" name="bOneTwo" value="@Model.VertexOne.BTwo" /><span class="labelWrapperTwo"><label for="cOneTwo">cOneTwo</label></span><input type="number" class="coord" id="cOneTwo" name="cOneTwo" value="@Model.VertexOne.CTwo" /><br /><br />
+    <span class="labelWrapperOne"><label for="xTwo">xTwo</label></span><input class="coord" type="number" id="xTwo" name="xTwo" value="@Model.VertexTwo.X" /><span class="labelWrapperOne"><label for="yTwo">yTwo</label></span><input type="number" class="coord" id="yTwo" name="yTwo" value="@Model.VertexTwo.Y" /><span class="labelWrapperOne"><label for="zTwo">zTwo</label></span><input type="number" class="coord" id="zTwo" name="zTwo" value="@Model.VertexTwo.Z" /><span class="labelWrapperTwo"><label for="aTwoOne">aTwoOne</label></span><input type="number" class="coord" id="aTwoOne" name="aTwoOne" value="@Model.VertexTwo.AOne" /><span class="labelWrapperTwo"><label for="bTwoOne">bTwoOne</label></span><input type="number" class="coord" id="bTwoOne" name="bTwoOne" value="@Model.VertexTwo.BOne" /><span class="labelWrapperTwo"><label for="cTwoOne">cTwoOne</label></span><input type="number" class="coord" id="cTwoOne" name="cTwoOne" value="@Model.VertexTwo.COne" /><span class="labelWrapperTwo"><label for="aTwoTwo">aTwoTwo</label></span><input type="number" class="coord" id="aTwoTwo" name="aTwoTwo" value="@Model.VertexTwo.ATwo" /><span class="labelWrapperTwo"><label for="bTwoTwo">bTwoTwo</label></span><input type="number" class="coord" id="bTwoTwo" name="bTwoTwo" value="@Model.VertexTwo.BTwo" /><span class="labelWrapperTwo"><label for="cTwoTwo">cTwoTwo</label></span><input type="number" class="coord" id="cTwoTwo" name="cTwoTwo" value="@Model.VertexTwo.CTwo" /><br /><br />
+    <span class="labelWrapperOne"><label for="xThree">xThree</label></span><input class="coord" type="number" id="xThree" name="xThree" value="@Model.VertexThree.X" /><span class="labelWrapperOne"><label for="yThree">yThree</label></span><input class="coord" type="number" id="yThree" name="yThree" value="@Model.VertexThree.Y" /><span class="labelWrapperOne"><label for="zThree">zThree</label></span><input type="number" class="coord" id="zThree" name="zThree" value="@Model.VertexThree.Z" /><span class="labelWrapperTwo"><label for="aThreeOne">aThreeOne</label></span><input type="number" class="coord" id="aThreeOne" name="aThreeOne" value="@Model.VertexThree.AOne" /><span class="labelWrapperTwo"><label for="bThreeOne">bThreeOne</label></span><input type="number" class="coord" id="bThreeOne" name="bThreeOne" value="@Model.VertexThree.BOne" /><span class="labelWrapperTwo"><label for="cThreeOne">cThreeOne</label></span><input type="number" class="coord" id="cThreeOne" name="cThreeOne" value="@Model.VertexThree.COne" /><span class="labelWrapperTwo"><label for="aThreeTwo">aThreeTwo</label></span><input type="number" class="coord" id="aThreeTwo" name="aThreeTwo" value="@Model.VertexThree.ATwo" /><span class="labelWrapperTwo"><label for="bThreeTwo">bThreeTwo</label></span><input type="number" class="coord" id="bThreeTwo" name="bThreeTwo" value="@Model.VertexThree.BTwo" /><span class="labelWrapperTwo"><label for="cThreeTwo">cThreeTwo</label></span><input type="number" class="coord" id="cThreeTwo" name="cThreeTwo" value="@Model.VertexThree.CTwo" /><button type="button" onclick="makeArc(.3)">Make Arc</button><br />
+    @*<button type="button" onclick="redraw()" id="redrawer">Redraw</button>*@
+    <input type="hidden" name="color" value="#739" />
+    <input type="text" id="splineName" name="splineName" /><input type="submit" onclick="return testName();" name="save" value="Save" /><span id="error"></span>
+</form>
+    <button type="button" onclick="spinYLoop()">Spin</button>
+<script>
+    var clearID;
+    var pointsInPath;
+    var t;
+    var frameInterval = 50;
+    var pointList;
+    var listScanCount = 0;
+    var trianglesScanned = 0;
+    var quatOne = new Quaternion(1, 0, 0, 0);
+    var quatTwo = new Quaternion(1, 0, 0, 0);
+    var stillDrawing = false;
+    var skippedFrames = 0;
+    function normalizePointRotation(x, y, z) {
+        var normX = x;
+        var normY = y;
+        var normZ = z - 100;
+        var rotatedVector = normalizeRotation(normX, normY, normZ);
+        return {
+            "X": rotatedVector["X"],
+            "Y": rotatedVector["Y"],
+            "Z": rotatedVector["Z"] + 100
+        };
+    }
+    function testName() {
+        if (0 < $('#splineName').val().length) {
+            $("#error").text("");
+            return true;
+        } else {
+            $("#error").text("Name cannot be blank");
+            return false;
+        }
+    }
+    function spinY() {
+        var newA = 2 * Math.acos(quatOne.a) + .05;
+        if (newA > 2 * Math.PI) {
+            newA -= 2 * Math.PI;
+        }
+        quatOne = new Quaternion(Math.cos(newA / 2), 0, 1, 0);
+        if (stillDrawing) {
+            skippedFrames++;
+        } else {
+            stillDrawing = true;
+
+            redraw();
+            //stillDrawing = false;
+        }
+    }
+    var spinIndex = 0;
+    function spinYLoop() {
+        if (0 == spinIndex) {
+            spinIndex = setInterval(spinY, 50);
+        } else {
+            clearInterval(spinIndex);
+            spinIndex = 0;
+        }
+    }
+    function normalizeRotation(x, y, z) {
+        var rotatorQuaternion = quatTwo.hamilton(quatOne);
+        var length = Math.sqrt(x * x + y * y + z * z);
+        var rotatedVector = rotatorQuaternion.rotate(x, y, z)
+        return {
+            "X": rotatedVector["X"] * length,
+            "Y": rotatedVector["Y"] * length,
+            "Z": rotatedVector["Z"] * length
+        };
+    }
+    var inc = .1;
+    var deltaTime = 0;
+    var GRID_INC = 5;
+    function redraw() {
+        var startTime = (new Date()).getTime();
+        //stillDrawing = true;
+        var halfCanvasWidth = $("#berzierDrawer").width() / 2;
+        var halfCanvasHeight = $("#berzierDrawer").height() / 2;
+        var rp1 = normalizePointRotation(parseInt(document.getElementById("xOne").value), parseInt(document.getElementById("yOne").value), parseInt(document.getElementById("zOne").value));
+        var xOne = rp1["X"];
+        var yOne = rp1["Y"];
+        var zOne = rp1["Z"];
+        var rp2 = normalizeRotation(parseInt(document.getElementById("aOneOne").value), parseInt(document.getElementById("bOneOne").value), parseInt(document.getElementById("cOneOne").value));
+        var aOneOne = rp2["X"];
+        var bOneOne = rp2["Y"];
+        var cOneOne = rp2["Z"];
+        var rp3 = normalizeRotation(parseInt(document.getElementById("aOneTwo").value), parseInt(document.getElementById("bOneTwo").value), parseInt(document.getElementById("cOneTwo").value));
+        var aOneTwo = rp3["X"];
+        var bOneTwo = rp3["Y"];
+        var cOneTwo = rp3["Z"];
+
+        var rp4 = normalizePointRotation(parseInt(document.getElementById("xTwo").value), parseInt(document.getElementById("yTwo").value), parseInt(document.getElementById("zTwo").value));
+        var xTwo = rp4["X"];
+        var yTwo = rp4["Y"];
+        var zTwo = rp4["Z"];
+        var rp5 = normalizeRotation(parseInt(document.getElementById("aTwoOne").value), parseInt(document.getElementById("bTwoOne").value), parseInt(document.getElementById("cTwoOne").value));
+        var aTwoOne = rp5["X"];
+        var bTwoOne = rp5["Y"];
+        var cTwoOne = rp5["Z"];
+        var rp6 = normalizeRotation(parseInt(document.getElementById("aTwoTwo").value), parseInt(document.getElementById("bTwoTwo").value), parseInt(document.getElementById("cTwoTwo").value));
+        var aTwoTwo = rp6["X"];
+        var bTwoTwo = rp6["Y"];
+        var cTwoTwo = rp6["Z"];
+
+        var rp7 = normalizePointRotation(parseInt(document.getElementById("xThree").value), parseInt(document.getElementById("yThree").value), parseInt(document.getElementById("zThree").value));
+        var xThree = rp7["X"];
+        var yThree = rp7["Y"];
+        var zThree = rp7["Z"];
+        var rp8 = normalizeRotation(parseInt(document.getElementById("aThreeOne").value), parseInt(document.getElementById("bThreeOne").value), parseInt(document.getElementById("cThreeOne").value));
+        var aThreeOne = rp8["X"];
+        var bThreeOne = rp8["Y"];
+        var cThreeOne = rp8["Z"];
+        var rp9 = normalizeRotation(parseInt(document.getElementById("aThreeTwo").value), parseInt(document.getElementById("bThreeTwo").value), parseInt(document.getElementById("cThreeTwo").value));
+        var aThreeTwo = rp9["X"];
+        var bThreeTwo = rp9["Y"];
+        var cThreeTwo = rp9["Z"];
+        t = 0;
+        pointsInPath = [];
+        var berzierCanvas = document.getElementById("berzierDrawer");
+        var context = berzierCanvas.getContext("2d");
+        context.clearRect(0, 0, 200, 200);
+        context.beginPath();
+        var xL = xOne * 100 / zOne;
+        var yL = yOne * 100 / zOne;
+        context.strokeStyle = "#739";
+        context.moveTo(xL, yL);
+        for (var t = inc; t < 1; t += inc) {
+            var xT = ((1 * xOne)) + t * ((3 * aOneOne)) + t * t * ((-6 * aOneOne) + (-3 * xOne) + (1 * xTwo) + (2 * xTwo) + (3 * aTwoOne)) + t * t * t * ((3 * aOneOne) + (2 * xOne) + (-1 * xTwo) + (-1 * xTwo) + (-3 * aTwoOne));
+            var yT = ((1 * yOne)) + t * ((3 * bOneOne)) + t * t * ((-6 * bOneOne) + (-3 * yOne) + (1 * yTwo) + (2 * yTwo) + (3 * bTwoOne)) + t * t * t * ((3 * bOneOne) + (2 * yOne) + (-1 * yTwo) + (-1 * yTwo) + (-3 * bTwoOne));
+            var zT = ((1 * zOne)) + t * ((3 * cOneOne)) + t * t * ((-6 * cOneOne) + (-3 * zOne) + (1 * zTwo) + (2 * zTwo) + (3 * cTwoOne)) + t * t * t * ((3 * cOneOne) + (2 * zOne) + (-1 * zTwo) + (-1 * zTwo) + (-3 * cTwoOne));
+            var xP = xT * 100 / zT;
+            var yP = yT * 100 / zT;
+            context.lineTo(xP, yP);
+        }
+        context.lineTo(xTwo * 100 / zTwo, yTwo * 100 / zTwo);
+        pointList = new Array();
+        var triangleList = new Array();
+        var curveIndex = 0;
+
+        for (var t = 0; t < 1; t += inc) {
+            var xTOne = ((1 * xOne)) + t * ((3 * aOneOne)) + t * t * ((-6 * aOneOne) + (-3 * xOne) + (1 * xThree) + (2 * xThree) + (3 * aThreeOne)) + t * t * t * ((3 * aOneOne) + (2 * xOne) + (-1 * xThree) + (-1 * xThree) + (-3 * aThreeOne));
+            var yTOne = ((1 * yOne)) + t * ((3 * bOneOne)) + t * t * ((-6 * bOneOne) + (-3 * yOne) + (1 * yThree) + (2 * yThree) + (3 * bThreeOne)) + t * t * t * ((3 * bOneOne) + (2 * yOne) + (-1 * yThree) + (-1 * yThree) + (-3 * bThreeOne));
+            var zTOne = ((1 * zOne)) + t * ((3 * cOneOne)) + t * t * ((-6 * cOneOne) + (-3 * zOne) + (1 * zThree) + (2 * zThree) + (3 * cThreeOne)) + t * t * t * ((3 * cOneOne) + (2 * zOne) + (-1 * zThree) + (-1 * zThree) + (-3 * cThreeOne));
+            var nT = 1 - t;
+            var xTTwo = ((1 * xThree)) + nT * ((3 * aThreeTwo)) + nT * nT * ((-6 * aThreeTwo) + (-3 * xThree) + (1 * xTwo) + (2 * xTwo) + (3 * aTwoOne)) + nT * nT * nT * ((3 * aThreeTwo) + (2 * xThree) + (-1 * xTwo) + (-1 * xTwo) + (-3 * aTwoOne));
+            var yTTwo = ((1 * yThree)) + nT * ((3 * bThreeTwo)) + nT * nT * ((-6 * bThreeTwo) + (-3 * yThree) + (1 * yTwo) + (2 * yTwo) + (3 * bTwoOne)) + nT * nT * nT * ((3 * bThreeTwo) + (2 * yThree) + (-1 * yTwo) + (-1 * yTwo) + (-3 * bTwoOne));
+            var zTTwo = ((1 * zThree)) + nT * ((3 * cThreeTwo)) + nT * nT * ((-6 * cThreeTwo) + (-3 * zThree) + (1 * zTwo) + (2 * zTwo) + (3 * cTwoOne)) + nT * nT * nT * ((3 * cThreeTwo) + (2 * zThree) + (-1 * zTwo) + (-1 * zTwo) + (-3 * cTwoOne));
+            var scale = Math.sqrt((differenceSquarer(xTOne, xTTwo) + differenceSquarer(yTOne, yTTwo) + differenceSquarer(zTOne, zTTwo)) / (differenceSquarer(xOne, xTwo) + differenceSquarer(yOne, yTwo) + differenceSquarer(zOne, zTwo)));
+            var aTOne = aOneTwo * scale;
+            var bTOne = bOneTwo * scale;
+            var cTOne = cOneTwo * scale;
+            var aTTwo = aTwoTwo * scale;
+            var bTTwo = bTwoTwo * scale;
+            var cTTwo = cTwoTwo * scale;
+            xL = xTOne * 100 / zTOne;
+            yL = yTOne * 100 / zTOne;
+            //context.beginPath();
+            //context.moveTo(xL,yL);
+            pointList.push(new Array());
+            pointList[curveIndex].push({ "X": xTOne, "Y": yTOne, "Z": zTOne });
+            var pointIndex = 1;
+            for (var u = inc; u < 1; u += inc) {
+                var xT = ((1 * xTOne)) + u * ((3 * aTOne)) + u * u * ((-6 * aTOne) + (-3 * xTOne) + (1 * xTTwo) + (2 * xTTwo) + (3 * aTTwo)) + u * u * u * ((3 * aTOne) + (2 * xTOne) + (-1 * xTTwo) + (-1 * xTTwo) + (-3 * aTTwo));
+                var yT = ((1 * yTOne)) + u * ((3 * bTOne)) + u * u * ((-6 * bTOne) + (-3 * yTOne) + (1 * yTTwo) + (2 * yTTwo) + (3 * bTTwo)) + u * u * u * ((3 * bTOne) + (2 * yTOne) + (-1 * yTTwo) + (-1 * yTTwo) + (-3 * bTTwo));
+                var zT = ((1 * zTOne)) + u * ((3 * cTOne)) + u * u * ((-6 * cTOne) + (-3 * zTOne) + (1 * zTTwo) + (2 * zTTwo) + (3 * cTTwo)) + u * u * u * ((3 * cTOne) + (2 * zTOne) + (-1 * zTTwo) + (-1 * zTTwo) + (-3 * cTTwo));
+                pointList[curveIndex].push({ "X": xT, "Y": yT, "Z": zT });
+                if (curveIndex > 0) {
+                    triangleList.push({
+                        "p1": pointList[curveIndex][pointIndex],
+                        "p2": pointList[curveIndex][pointIndex - 1],
+                        "p3": cappedIndex(pointList[curveIndex - 1], pointIndex),
+                        "covering": new Array(),
+                        "beenDrawn": false,
+                        "lastHitBy": null
+                    });
+                    triangleList.push({
+                        "p1": pointList[curveIndex][pointIndex - 1],
+                        "p2": cappedIndex(pointList[curveIndex - 1], pointIndex - 1),
+                        "p3": cappedIndex(pointList[curveIndex - 1], pointIndex),
+                        "covering": new Array(),
+                        "beenDrawn": false,
+                        "lastHitBy": null
+                    });
+                }
+                pointIndex++;
+            }
+
+            pointList[curveIndex].push({ "X": xTTwo, "Y": yTTwo, "Z": zTTwo });
+            if (curveIndex > 0) {
+                triangleList.push({
+                    "p1": pointList[curveIndex][pointIndex],
+                    "p2": pointList[curveIndex][pointIndex - 1],
+                    "p3": cappedIndex(pointList[curveIndex - 1], pointIndex),
+                    "covering": new Array(),
+                    "beenDrawn": false,
+                    "lastHitBy": null
+                });
+                triangleList.push({
+                    "p1": pointList[curveIndex][pointIndex - 1],
+                    "p2": cappedIndex(pointList[curveIndex - 1], pointIndex - 1),
+                    "p3": cappedIndex(pointList[curveIndex - 1], pointIndex),
+                    "covering": new Array(),
+                    "beenDrawn": false,
+                    "lastHitBy": null
+                });
+            }
+            pointIndex++;
+            while (curveIndex > 0 && pointIndex < cappedIndex(pointList[curveIndex - 1].length)) {
+                triangleList.push({
+                    "p1": pointList[curveIndex - 1][pointIndex],
+                    "p2": pointList[curveIndex - 1][pointIndex - 1],
+                    "p3": cappedIndex(pointList[curveIndex], pointIndex),
+                    "covering": new Array(),
+                    "beenDrawn": false,
+                    "lastHitBy": null
+                });
+                pointIndex++;
+            }
+            curveIndex++;
+        }
+        context.lineWidth = 1;
+        for (var lastPointIndex = 1; lastPointIndex < pointList[curveIndex - 1].length; lastPointIndex++) {
+            triangleList.push({
+                "p1": pointList[curveIndex - 1][lastPointIndex],
+                "p2": pointList[curveIndex - 1][lastPointIndex - 1],
+                "p3": { "X": xThree, "Y": yThree, "Z": zThree },
+                "covering": new Array(),
+                "beenDrawn": false,
+                "lastHitBy": null
+            });
+        }
+        var GRID_WIDTH_COUNT = document.getElementById("berzierDrawer").width / GRID_INC;
+        var grid = new Array();
+        for (var gridHeight = 0; gridHeight < Math.ceil(document.getElementById("berzierDrawer").height / GRID_INC) * GRID_INC; gridHeight += GRID_INC) {
+            var innerArray = new Array();
+            for (var innerIndex = 0; innerIndex < GRID_WIDTH_COUNT; innerIndex++) {
+                innerArray.push(null);
+            }
+            grid.push(innerArray);
+        }
+        var triangleComparisons = 0;
+        for (var triangleIndex = 0; triangleIndex < triangleList.length; triangleIndex++) {
+            var currentTriangle = triangleList[triangleIndex];
+            var topPoint = currentTriangle["p1"];
+            var bottomPoint = currentTriangle["p1"];
+            if ((currentTriangle["p2"]["Y"] / currentTriangle["p2"]["Z"]) > (currentTriangle["p1"]["Y"] / currentTriangle["p1"]["Z"])) {
+                topPoint = currentTriangle["p2"];
+            } else {
+                bottomPoint = currentTriangle["p2"];
+            }
+            if ((currentTriangle["p3"]["Y"] / currentTriangle["p3"]["Z"]) > (topPoint["Y"] / topPoint["Z"])) {
+                topPoint = currentTriangle["p3"];
+            } else if ((currentTriangle["p3"]["Y"] / currentTriangle["p3"]["Z"]) < (bottomPoint["Y"] / bottomPoint["Z"])) {
+                bottomPoint = currentTriangle["p3"];
+            }
+            var bottomGridLine = Math.floor(((bottomPoint["Y"]) * 100 / bottomPoint["Z"] + halfCanvasHeight) / GRID_INC) * GRID_INC;
+            var uniqueComparisonCount = 0;
+            listScanCount = 0;
+            if (bottomGridLine < 0) {
+                bottomGridLine = 0;
+            }
+            for (var y = bottomGridLine;
+                      y < ((topPoint["Y"]) * 100 / topPoint["Z"] + halfCanvasHeight) + GRID_INC &&
+                          y < $("#berzierDrawer").height() ;
+                      y += GRID_INC) {
+                var leftmost = null;
+                var rightmost = null;
+                var xL = null;
+                var xR = null;
+                var zL = null;
+                var zR = null;
+                for (var i = 0; i < 3; i++) {
+                    var p1 = {
+                        "X": currentTriangle["p" + (i % 3 + 1)]["X"],
+                        "Y": currentTriangle["p" + (i % 3 + 1)]["Y"],
+                        "Z": currentTriangle["p" + (i % 3 + 1)]["Z"]
+                    };
+                    var p2 = {
+                        "X": currentTriangle["p" + ((i + 1) % 3 + 1)]["X"],
+                        "Y": currentTriangle["p" + ((i + 1) % 3 + 1)]["Y"],
+                        "Z": currentTriangle["p" + ((i + 1) % 3 + 1)]["Z"]
+                    };
+                    if (p1["X"] == p2["X"]) {
+                        var z = (y - p1["Y"]) * (p2["Z"] - p1["Z"]) / (p2["Y"] - p1["Y"]) + p1["Y"];
+                        if ((p1["Y"] / p1["Z"] > p2["Y"] / p2["Z"] && p1["Y"] * 100 / p1["Z"] > y && y > p2["Y"] * 100 / p2["Z"]) ||
+                                    (p1["Y"] / p1["Z"] < p2["Y"] / p2["Z"] && p1["Y"] * 100 / p1["Z"] < y && y < p2["Y"] * 100 / p2["Z"])) {
+                            xInt = p1["X"] * 100 / p1["Z"];
+                            if (null == leftmost) {
+                                leftmost = (p1["X"]) * 100 / z + halfCanvasWidth;
+                            } else {
+                                if (xInt < leftmost) {
+                                    leftmost = (p1["X"]) * 100 / z + halfCanvasWidth;
+                                }
+                            }
+
+                            if (null == rightmost) {
+                                rightmost = (p1["X"]) * 100 / z + halfCanvasWidth;
+                            } else {
+                                if (xInt > rightmost) {
+                                    rightmost = (p1["X"]) * 100 / z + halfCanvasWidth;
+                                }
+                            }
+                        }
+                    }
+                    else {
+                        var a = (p1["Z"] - p2["Z"]) / (p1["X"] - p2["X"]);
+                        var b = p1["Z"] - p1["X"] * a;
+                        var c = (p1["Y"] - p2["Y"]) / (p1["X"] - p2["X"]);
+                        var d = p1["Y"] - p1["X"] * c;
+                        var adjY = y - halfCanvasHeight;
+                        var xAct = (d * 100 - adjY * b) / (adjY * a - 100 * c);
+                        var z = a * xAct + b;
+                        var xInt = (xAct) * 100 / z + halfCanvasWidth;
+                        if ((p1["X"] > p2["X"] && xAct < p1["X"] && xAct > p2["X"]) ||
+                                (p1["X"] < p2["X"] && xAct > p1["X"] && xAct < p2["X"])) {
+                            if (null == leftmost) {
+                                leftmost = xInt;
+                                xL = xAct;
+                                zL = (xL - p1["X"]) * (p2["Z"] - p1["Z"]) / (p2["X"] - p1["X"]) + p1["Z"];
+                            } else {
+                                if (xInt < leftmost) {
+                                    leftmost = xInt;
+                                    xL = xAct;
+                                    zL = (xL - p1["X"]) * (p2["Z"] - p1["Z"]) / (p2["X"] - p1["X"]) + p1["Z"];
+                                }
+                            }
+
+                            if (null == rightmost) {
+                                rightmost = xInt;
+                                xR = xAct;
+                                zR = (xL - p1["X"]) * (p2["Z"] - p1["Z"]) / (p2["X"] - p1["X"]) + p1["Z"];
+                            } else {
+                                if (xInt > rightmost) {
+                                    rightmost = xInt;
+                                    xR = xAct;
+                                    zR = (xL - p1["X"]) * (p2["Z"] - p1["Z"]) / (p2["X"] - p1["X"]) + p1["Z"];
+                                }
+                            }
+                        }
+
+                        var y1 = p1["Y"] * 100 / p1["Z"];
+                        if ((y1+halfCanvasHeight) >= y && (y1+halfCanvasHeight) <= y + GRID_INC) {
+                            xAct = p1["X"];
+                            z = a * xAct + b;
+                            xInt = (xAct) * 100 / z + halfCanvasWidth;
+                            if (null == leftmost) {
+                                leftmost = xInt;
+                                xL = xAct;
+                                zL = (xL - p1["X"]) * (p2["Z"] - p1["Z"]) / (p2["X"] - p1["X"]) + p1["Z"];
+                            } else {
+                                if (xInt < leftmost) {
+                                    leftmost = xInt;
+                                    xL = xAct;
+                                    zL = (xL - p1["X"]) * (p2["Z"] - p1["Z"]) / (p2["X"] - p1["X"]) + p1["Z"];
+                                }
+                            }
+
+                            if (null == rightmost) {
+                                rightmost = xInt;
+                                xR = xAct;
+                                zR = (xL - p1["X"]) * (p2["Z"] - p1["Z"]) / (p2["X"] - p1["X"]) + p1["Z"];
+                            } else {
+                                if (xInt > rightmost) {
+                                    rightmost = xInt;
+                                    xR = xAct;
+                                    zR = (xL - p1["X"]) * (p2["Z"] - p1["Z"]) / (p2["X"] - p1["X"]) + p1["Z"];
+                                }
+                            }
+                        }
+
+                        var y2 = p2["Y"] * 100 / p2["Z"];
+                        if ((y2 + halfCanvasHeight) >= y && (y2 + halfCanvasHeight) <= y + GRID_INC) {
+                            xAct = p2["X"];
+                            z = a * xAct + b;
+                            xInt = (xAct) * 100 / z + halfCanvasWidth;
+                            if (null == leftmost) {
+                                leftmost = xInt;
+                                xL = xAct;
+                                zL = (xL - p1["X"]) * (p2["Z"] - p1["Z"]) / (p2["X"] - p1["X"]) + p1["Z"];
+                            } else {
+                                if (xInt < leftmost) {
+                                    leftmost = xInt;
+                                    xL = xAct;
+                                    zL = (xL - p1["X"]) * (p2["Z"] - p1["Z"]) / (p2["X"] - p1["X"]) + p1["Z"];
+                                }
+                            }
+
+                            if (null == rightmost) {
+                                rightmost = xInt;
+                                xR = xAct;
+                                zR = (xL - p1["X"]) * (p2["Z"] - p1["Z"]) / (p2["X"] - p1["X"]) + p1["Z"];
+                            } else {
+                                if (xInt > rightmost) {
+                                    rightmost = xInt;
+                                    xR = xAct;
+                                    zR = (xL - p1["X"]) * (p2["Z"] - p1["Z"]) / (p2["X"] - p1["X"]) + p1["Z"];
+                                }
+                            }
+                        }
+                    }
+
+
+                    var xAct = (d * 100 - (adjY + GRID_INC) * b) / ((adjY + GRID_INC) * a - 100 * c);
+                    z = a * xAct + b;
+                    xInt = (xAct) * 100 / z + halfCanvasWidth;
+
+                    if ((p1["X"] > p2["X"] && xAct < p1["X"] && xAct > p2["X"]) ||
+                            (p1["X"] < p2["X"] && xAct > p1["X"] && xAct < p2["X"])) {
+                        if (null == leftmost) {
+                            leftmost = xInt;
+                            xL = xAct;
+                            zL = (xL - p1["X"]) * (p2["Z"] - p1["Z"]) / (p2["X"] - p1["X"]) + p1["Z"];
+                        } else {
+                            if (xInt < leftmost) {
+                                leftmost = xInt;
+                                xL = xAct;
+                                zL = (xL - p1["X"]) * (p2["Z"] - p1["Z"]) / (p2["X"] - p1["X"]) + p1["Z"];
+                            }
+                        }
+
+                        if (null == rightmost) {
+                            rightmost = xInt;
+                            xR = xAct;
+                            zR = (xL - p1["X"]) * (p2["Z"] - p1["Z"]) / (p2["X"] - p1["X"]) + p1["Z"];
+                        } else {
+                            if (xInt > rightmost) {
+                                rightmost = xInt;
+                                xR = xAct;
+                                zR = (xL - p1["X"]) * (p2["Z"] - p1["Z"]) / (p2["X"] - p1["X"]) + p1["Z"];
+                            }
+                        }
+                    }
+                }
+                if (leftmost < 0) {
+                    leftmost = 0;
+                }
+                for (
+                        var x = Math.ceil(leftmost / GRID_INC) ;
+                        x < Math.floor(rightmost / GRID_INC) && x * GRID_INC < document.getElementById("berzierDrawer").width;
+                        x++
+                ) {
+                    var xWorldCoord = x * GRID_INC;
+                    var xLInt = xL * 100 / zL + halfCanvasWidth;
+                    var xRInt = xR * 100 / zR + halfCanvasWidth;
+                    thisZLevel = zSanityChecker((xWorldCoord - xLInt) * (zR - zL) / (xRInt - xLInt) + zL, currentTriangle);
+                    if (null == grid[Math.floor(y / GRID_INC)][x]) {
+                        grid[Math.floor(y / GRID_INC)][x] = { "triangle": currentTriangle, "depth": thisZLevel };
+                    }
+                    else {
+                        gridItemScanned = grid[Math.floor(y / GRID_INC)][x];
+                        var depthScanned = gridItemScanned["depth"];
+                        //drawTestingTriangle(currentTriangle, context);
+                        triangleComparisons++;
+                        var occupyingScanned = gridItemScanned["triangle"];
+                        //drawTestingTriangle(occupyingScanned, context);
+                        //if(currentTriangle!=occupyingScanned["lastHitBy"]){
+                        uniqueComparisonCount++;
+                        //testIntersection(currentTriangle, occupyingScanned, context);
+                        var intersectResults = checkCoveringTriangle(currentTriangle, occupyingScanned, halfCanvasWidth, halfCanvasHeight);
+                        if (checkCoveringTriangle(currentTriangle, occupyingScanned, halfCanvasWidth, halfCanvasHeight)) {
+                            if (thisZLevel < depthScanned - 1) {
+                                if (!(listHas(occupyingScanned["covering"], currentTriangle) || listHas(currentTriangle["covering"], occupyingScanned))) {
+                                    currentTriangle["covering"].push(occupyingScanned);
+                                    grid[Math.floor(y / GRID_INC)][x] = { "triangle": currentTriangle, "depth": thisZLevel };
+                                }
+                            } else if (thisZLevel > depthScanned + 1) //The current triangle is behind the other triangle being checked
+                            {
+                                if (!(listHas(currentTriangle["covering"], occupyingScanned) || listHas(occupyingScanned["covering"], currentTriangle))) {
+                                    occupyingScanned["covering"].push(currentTriangle);
+                                }
+                            }
+                        }
+                        
+                    }
+                }
+
+            }
+        }
+
+        context.fillStyle = "#739";
+        context.strokeStyle = "#000";
+        //Draws the triangles on the canvas
+        var trianglesPending = true;
+        var atLeastOneDrawn = true;
+        var requiredPasses = 0;
+        while (trianglesPending) {
+            atLeastOneDrawn = false;
+            trianglesPending = false;
+            requiredPasses += 1;
+            var trainglesDrawnThisCycle = 0;
+            var lowestZValue = null;
+            var lowestZTriangle = null;
+            for (var triangleIndex = 0; triangleIndex < triangleList.length; triangleIndex++) {
+                var currentTriangle = triangleList[triangleIndex];
+                var currentZValue = zLevel(currentTriangle);
+                if (!currentTriangle["beenDrawn"]) {
+                    if ((null == lowestZValue || lowestZValue < currentZValue)) {
+                        lowestZValue = currentZValue;
+                        lowestZTriangle = currentTriangle;
+                    }
+                    var result = drawHierarchy(currentTriangle, context);
+                    atLeastOneDrawn = atLeastOneDrawn || result;
+                    trianglesPending = trianglesPending || !result;
+                    if (result) {
+                        trainglesDrawnThisCycle++;
+                    }
+                }
+
+            }
+            if (!atLeastOneDrawn) {
+                drawForce(lowestZTriangle, context);
+            }
+        }
+        stillDrawing = false;
+        deltaTime = (new Date()).getTime() - startTime;
+    }
+
+    //Ensures that the reported z-index of a triangle can't be beyond the range given from the points that define it.
+    function zSanityChecker(zLevel, triangle) {
+        var maxZ = triangle["p1"]["Z"];
+        var minZ = triangle["p1"]["Z"];
+        if (triangle["p2"]["Z"] > maxZ) {
+            maxZ = triangle["p2"]["Z"];
+        } else {
+            minZ = triangle["p2"]["Z"];
+        }
+        if (triangle["p3"]["Z"] > maxZ) {
+            maxZ = triangle["p2"]["Z"];
+        } else if (triangle["p3"]["Z"] < minZ) {
+            minZ = triangle["p2"]["Z"];
+        }
+        if (zLevel > maxZ) {
+            return maxZ;
+        } else if (zLevel < minZ) {
+            return minZ;
+        } else {
+            return zLevel;
+        }
+        
+    }
+    //Finds the average z-coordinate for the vertices of a given triangle
+    function zLevel(triangle) {
+        return (triangle["p1"]["Z"] + triangle["p2"]["Z"] + triangle["p3"]["Z"]) / 3
+    }
+    //Stops animation
+    function cd() {
+        clearInterval(clearID);
+    }
+    //Returns the square of the difference between the two arguments.
+    function differenceSquarer(vOne, vTwo) {
+        return (vOne - vTwo) * (vOne - vTwo);
+    }
+    function checkCoveringTriangle(triangleOne, triangleTwo, halfCanvasWidth, halfCanvasHeight) {
+        var triangleOneEdges = [
+            { "p1": triangleOne["p1"], "p2": triangleOne["p2"], "sidePast": new Array() },
+            { "p1": triangleOne["p2"], "p2": triangleOne["p3"], "sidePast": new Array() },
+            { "p1": triangleOne["p1"], "p2": triangleOne["p3"], "sidePast": new Array() }
+
+        ];
+        var triangleTwoEdges = [
+            { "p1": triangleTwo["p1"], "p2": triangleTwo["p2"] },
+            { "p1": triangleTwo["p2"], "p2": triangleTwo["p3"] },
+            { "p1": triangleTwo["p1"], "p2": triangleTwo["p3"] }
+        ];
+        for (var oneIndex = 0; oneIndex < 3; oneIndex++) {
+            var scanEdgeOne = triangleOneEdges[oneIndex];
+            for (var twoIndex = 0; twoIndex < 3; twoIndex++) {
+                var scanEdgeTwo = triangleTwoEdges[twoIndex];
+                var decomposedOne = decomposeEdge(scanEdgeOne, halfCanvasWidth, halfCanvasHeight);
+                var decomposedTwo = decomposeEdge(scanEdgeTwo, halfCanvasWidth, halfCanvasHeight);
+                var x1 = decomposedOne["p1"]["X"];
+                var x2 = decomposedOne["p2"]["X"];
+                var x3 = decomposedTwo["p1"]["X"];
+                var x4 = decomposedTwo["p2"]["X"];
+                var y1 = decomposedOne["p1"]["Y"];
+                var y2 = decomposedOne["p2"]["Y"];
+                var y3 = decomposedTwo["p1"]["Y"];
+                var y4 = decomposedTwo["p2"]["Y"];
+                var denominator = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+                if (.01 > denominator && denominator > -.01) {
+                    scanEdgeOne["sidePast"].push(null);
+                } else {
+                    var intersectionX = ((x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * y4 - x4 * y3)) / denominator;
+                    var intersectionY = ((x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (x3 * y4 - x4 * y3)) / denominator;
+                    var intersectInsideTwo = 
+                        x3 > x4 && x3 - .01 > intersectionX && intersectionX > x4 + .01 ||
+                            x3 < x4 && x3 + .01 < intersectionX && intersectionX < x4 - .01;
+                    if (x1 > x2 && x1 - .01 > intersectionX && intersectionX > x2 + .01 ||
+                            x1 < x2 && x1 + .01 < intersectionX && intersectionX < x2 - .01) {
+                        return true
+                    } 
+                    else if(intersectInsideTwo) {
+                        if (x1 > x2 && intersectionX >= x1 - .01 ||
+                        x1 < x2 && intersectionX <= x1 + .01) {
+                            scanEdgeOne["sidePast"].push("1");
+                        } else {
+                            scanEdgeOne["sidePast"].push("2");
+                        }
+                    } else {
+                        scanEdgeOne["sidePast"].push(null);
+                    }
+                }
+            }
+        }
+
+        for (var oneIndex = 0; oneIndex < 3; oneIndex++) {
+            directionality = null;
+            for (var directionalityIndex = 0; directionalityIndex < 3; directionalityIndex++) {
+                scanDirectionality = triangleOneEdges[oneIndex]["sidePast"][directionalityIndex];
+                if (null != scanDirectionality) {
+                    if (null == directionality) {
+                        directionality = scanDirectionality;
+                    } else if (directionality != scanDirectionality) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    function decomposePoint(point, halfCanvasWidth, halfCanvasHeight) {
+        return {
+            "X": (point["X"]) * 100 / point["Z"] + halfCanvasWidth,
+            "Y": (point["Y"]) * 100 / point["Z"] + halfCanvasHeight,
+        };
+    }
+
+    function decomposeEdge(edge, halfCanvasWidth, halfCanvasHeight) {
+        return {
+            "p1": decomposePoint(edge["p1"], halfCanvasWidth, halfCanvasHeight),
+            "p2": decomposePoint(edge["p2"], halfCanvasWidth, halfCanvasHeight),
+        }
+    }
+    //Returns the element at the given index for the given list,
+    //or the element at the end of the list if the index is larger than the length of the list
+    function cappedIndex(cappedArray, index) {
+        if (index < cappedArray.length) {
+            return cappedArray[index];
+        } else {
+            return cappedArray[cappedArray.length - 1];
+        }
+    }
+    function drawHierarchy(triangle, canvasContext) {
+        var freeToDraw = true;
+        if (triangle["beenDrawn"]) {
+            return true;
+        }
+        for (var coveredIndex = 0; coveredIndex < triangle["covering"].length; coveredIndex++) {
+            freeToDraw = freeToDraw && triangle["covering"][coveredIndex]["beenDrawn"];
+            trianglesScanned++;
+        }
+        if (freeToDraw) {
+            if (
+              triangle["p1"]["Z"] > 0 &&
+              triangle["p2"]["Z"] > 0 &&
+              triangle["p3"]["Z"] > 0
+            ) {
+
+                var halfCanvasWidth = $("#berzierDrawer").width() / 2;
+                var halfCanvasHeight = $("#berzierDrawer").height() / 2;
+                canvasContext.beginPath();
+                var xS1 = triangle["p1"]["X"];
+                var yS1 = triangle["p1"]["Y"];
+                var zS1 = triangle["p1"]["Z"];
+                //Find the x and y coordinates on the canvas for the first point
+                var xC1 = (xS1) * 100 / zS1 + halfCanvasWidth;
+                var yC1 = (yS1) * 100 / zS1 + halfCanvasHeight;
+                canvasContext.moveTo(xC1, yC1);
+                var xS2 = triangle["p2"]["X"];
+                var yS2 = triangle["p2"]["Y"];
+                var zS2 = triangle["p2"]["Z"];
+                //Find the x and y coordinates on the canvas for the second point
+                var xC2 = (xS2) * 100 / zS2 + halfCanvasWidth;
+                var yC2 = (yS2) * 100 / zS2 + halfCanvasHeight;
+                canvasContext.lineTo(xC2, yC2);
+                var xS3 = triangle["p3"]["X"];
+                var yS3 = triangle["p3"]["Y"];
+                var zS3 = triangle["p3"]["Z"];
+                //Find the x and y coordinates on the canvas for the third point
+                var xC3 = (xS3) * 100 / zS3 + halfCanvasWidth;
+                var yC3 = (yS3) * 100 / zS3 + halfCanvasHeight;
+                canvasContext.lineTo(xC3, yC3);
+                canvasContext.closePath();
+                canvasContext.fill();
+                canvasContext.stroke();
+            }
+            triangle["beenDrawn"] = true;
+            return true;
+        }
+        return false;
+    }
+    function drawForce(triangle, canvasContext) {
+        if (triangle["beenDrawn"]) {
+            return true;
+        }
+        if (
+          triangle["p1"]["Z"] > 0 &&
+          triangle["p2"]["Z"] > 0 &&
+          triangle["p3"]["Z"] > 0
+        ) {
+
+            var canvasWidth = $("#berzierDrawer").width();
+            var canvasHeight = $("#berzierDrawer").height();
+            canvasContext.beginPath();
+            var xS1 = triangle["p1"]["X"];
+            var yS1 = triangle["p1"]["Y"];
+            var zS1 = triangle["p1"]["Z"];
+            //Find the x and y coordinates on the canvas for the first point
+            var xC1 = (xS1) * 100 / zS1 + canvasWidth / 2;
+            var yC1 = (yS1) * 100 / zS1 + canvasHeight / 2;
+            canvasContext.moveTo(xC1, yC1);
+            var xS2 = triangle["p2"]["X"];
+            var yS2 = triangle["p2"]["Y"];
+            var zS2 = triangle["p2"]["Z"];
+            //Find the x and y coordinates on the canvas for the second point
+            var xC2 = (xS2) * 100 / zS2 + canvasWidth / 2;
+            var yC2 = (yS2) * 100 / zS2 + canvasHeight / 2;
+            canvasContext.lineTo(xC2, yC2);
+            var xS3 = triangle["p3"]["X"];
+            var yS3 = triangle["p3"]["Y"];
+            var zS3 = triangle["p3"]["Z"];
+            //Find the x and y coordinates on the canvas for the third point
+            var xC3 = (xS3) * 100 / zS3 + canvasWidth / 2;
+            var yC3 = (yS3) * 100 / zS3 + canvasHeight / 2;
+            canvasContext.lineTo(xC3, yC3);
+            canvasContext.closePath();
+            canvasContext.fill();
+            canvasContext.stroke();
+        }
+        triangle["beenDrawn"] = true;
+        return true;
+    }
+    function drawTestingTriangle(triangle, canvasContext) {
+        canvasContext.clearRect(0, 0, 200, 200);
+        if (
+          triangle["p1"]["Z"] > 0 &&
+          triangle["p2"]["Z"] > 0 &&
+          triangle["p3"]["Z"] > 0
+        ) {
+
+            var canvasWidth = $("#berzierDrawer").width();
+            var canvasHeight = $("#berzierDrawer").height();
+            canvasContext.beginPath();
+            xS1 = triangle["p1"]["X"];
+            yS1 = triangle["p1"]["Y"];
+            zS1 = triangle["p1"]["Z"];
+            //Find the x and y coordinates on the canvas for the first point
+            xC1 = (xS1 - canvasWidth / 2) * 100 / zS1 + canvasWidth / 2;
+            yC1 = (yS1 - canvasHeight / 2) * 100 / zS1 + canvasHeight / 2;
+            canvasContext.moveTo(xC1, yC1);
+            xS2 = triangle["p2"]["X"];
+            yS2 = triangle["p2"]["Y"];
+            zS2 = triangle["p2"]["Z"];
+            //Find the x and y coordinates on the canvas for the second point
+            xC2 = (xS2 - canvasWidth / 2) * 100 / zS2 + canvasWidth / 2;
+            yC2 = (yS2 - canvasHeight / 2) * 100 / zS2 + canvasHeight / 2;
+            canvasContext.lineTo(xC2, yC2);
+            xS3 = triangle["p3"]["X"];
+            yS3 = triangle["p3"]["Y"];
+            zS3 = triangle["p3"]["Z"];
+            //Find the x and y coordinates on the canvas for the third point
+            xC3 = (xS3 - canvasWidth / 2) * 100 / zS3 + canvasWidth / 2;
+            yC3 = (yS3 - canvasHeight / 2) * 100 / zS3 + canvasHeight / 2;
+            canvasContext.lineTo(xC3, yC3);
+            canvasContext.closePath();
+            canvasContext.fill();
+            canvasContext.stroke();
+        }
+    }
+    function sampleRasterization(triangle, x, y, canvasContext) {
+        canvasContext.clearRect(0, 0, 200, 200);
+        var halfCanvasWidth = $("#berzierDrawer").width() / 2;
+        var halfCanvasHeight = $("#berzierDrawer").height() / 2;
+        canvasContext.beginPath();
+        xS1 = triangle["p1"]["X"];
+        yS1 = triangle["p1"]["Y"];
+        zS1 = triangle["p1"]["Z"];
+        //Find the x and y coordinates on the canvas for the first point
+        xC1 = (xS1) * 100 / zS1 + halfCanvasWidth;
+        yC1 = (yS1) * 100 / zS1 + halfCanvasHeight;
+        canvasContext.moveTo(xC1, yC1);
+        xS2 = triangle["p2"]["X"];
+        yS2 = triangle["p2"]["Y"];
+        zS2 = triangle["p2"]["Z"];
+        //Find the x and y coordinates on the canvas for the second point
+        xC2 = (xS2) * 100 / zS2 + halfCanvasWidth;
+        yC2 = (yS2) * 100 / zS2 + halfCanvasHeight;
+        canvasContext.lineTo(xC2, yC2);
+        xS3 = triangle["p3"]["X"];
+        yS3 = triangle["p3"]["Y"];
+        zS3 = triangle["p3"]["Z"];
+        //Find the x and y coordinates on the canvas for the third point
+        xC3 = (xS3) * 100 / zS3 + halfCanvasWidth;
+        yC3 = (yS3) * 100 / zS3 + halfCanvasHeight;
+        canvasContext.lineTo(xC3, yC3);
+        canvasContext.closePath();
+        canvasContext.stroke();
+        canvasContext.beginPath();
+        canvasContext.moveTo(x, y);
+        canvasContext.lineTo(x, y + GRID_INC);
+        canvasContext.lineTo(x + GRID_INC, y + GRID_INC);
+        canvasContext.lineTo(x + GRID_INC, y);
+        canvasContext.closePath();
+        canvasContext.stroke();
+    }
+    function testIntersection(triangleOne, triangleTwo, canvasContext) {
+        canvasContext.clearRect(0, 0, 200, 200);
+        var halfCanvasWidth = $("#berzierDrawer").width() / 2;
+        var halfCanvasHeight = $("#berzierDrawer").height() / 2;
+        canvasContext.beginPath();
+        var xS1 = triangleOne["p1"]["X"];
+        var yS1 = triangleOne["p1"]["Y"];
+        var zS1 = triangleOne["p1"]["Z"];
+        //Find the x and y coordinates on the canvas for the first point
+        var xC1 = (xS1) * 100 / zS1 + halfCanvasWidth;
+        var yC1 = (yS1) * 100 / zS1 + halfCanvasHeight;
+        canvasContext.moveTo(xC1, yC1);
+        var xS2 = triangleOne["p2"]["X"];
+        var yS2 = triangleOne["p2"]["Y"];
+        var zS2 = triangleOne["p2"]["Z"];
+        //Find the x and y coordinates on the canvas for the second point
+        var xC2 = (xS2) * 100 / zS2 + halfCanvasWidth;
+        var yC2 = (yS2) * 100 / zS2 + halfCanvasHeight;
+        canvasContext.lineTo(xC2, yC2);
+        var xS3 = triangleOne["p3"]["X"];
+        var yS3 = triangleOne["p3"]["Y"];
+        var zS3 = triangleOne["p3"]["Z"];
+        //Find the x and y coordinates on the canvas for the third point
+        var xC3 = (xS3) * 100 / zS3 + halfCanvasWidth;
+        var yC3 = (yS3) * 100 / zS3 + halfCanvasHeight;
+        canvasContext.lineTo(xC3, yC3);
+        canvasContext.closePath();
+        canvasContext.stroke();
+        canvasContext.beginPath();
+
+
+        xS1 = triangleTwo["p1"]["X"];
+        yS1 = triangleTwo["p1"]["Y"];
+        zS1 = triangleTwo["p1"]["Z"];
+        //Find the x and y coordinates on the canvas for the first point
+        xC1 = (xS1) * 100 / zS1 + halfCanvasWidth;
+        yC1 = (yS1) * 100 / zS1 + halfCanvasHeight;
+        canvasContext.moveTo(xC1, yC1);
+        xS2 = triangleTwo["p2"]["X"];
+        yS2 = triangleTwo["p2"]["Y"];
+        zS2 = triangleTwo["p2"]["Z"];
+        //Find the x and y coordinates on the canvas for the second point
+        xC2 = (xS2) * 100 / zS2 + halfCanvasWidth;
+        yC2 = (yS2) * 100 / zS2 + halfCanvasHeight;
+        canvasContext.lineTo(xC2, yC2);
+        xS3 = triangleTwo["p3"]["X"];
+        yS3 = triangleTwo["p3"]["Y"];
+        zS3 = triangleTwo["p3"]["Z"];
+        //Find the x and y coordinates on the canvas for the third point
+        xC3 = (xS3) * 100 / zS3 + halfCanvasWidth;
+        yC3 = (yS3) * 100 / zS3 + halfCanvasHeight;
+        canvasContext.lineTo(xC3, yC3);
+
+        canvasContext.closePath();
+        canvasContext.stroke();
+    }
+    function listHas(list, element) {
+        listScanCount++;
+        for (var i = 0; i < list.length; i++) {
+            if (list[i] === element) {
+                //The element argument matches the element at the given list index
+                return true;
+            }
+        }
+        //no list index matched the given argument
+        return false;
+    }
+    function hasInTree(closerTriangle, furtherTriangle) {
+        //target triangle means furtherTriangle, the triangle we are trying to look for a match for
+
+        if (closerTriangle === furtherTriangle) {
+            //The target triangle is the same as the triangle to search on
+            //Hopefully this only happens on the first iteration - otherwise we have problems!
+            return true;
+        }
+        if (listHas(closerTriangle["covering"], furtherTriangle)) {
+            //The target triangle is located in the covering list of the triangle to search on
+            return true;
+        }
+        for (var triangleIndex = 0; triangleIndex < closerTriangle["covering"].length; triangleIndex++) {
+            triangleInHierarchy = closerTriangle["covering"][triangleIndex];
+            if (furtherTriangle != triangleInHierarchy["lastHitBy"] && hasInTree(triangleInHierarchy, furtherTriangle)) {
+                //The target triangle occurs in the hierarchy of triangles covering the triangle to search on
+                return true;
+            }
+        }
+        closerTriangle["lastHitBy"] = furtherTriangle;
+        //None of the other tests found a match - the target triangle does not cover the triangle to search on.
+        return false;
+    }
+    function cross(pointOne, pointTwo) {
+        var xNew = pointOne["Y"] * pointTwo["Z"] - pointOne["Z"] * pointTwo["Y"];
+        var yNew = pointOne["Z"] * pointTwo["X"] - pointOne["X"] * pointTwo["Z"];
+        var zNew = pointOne["X"] * pointTwo["Y"] - pointOne["Y"] * pointTwo["X"];
+        return { "X": xNew, "Y": yNew, "Z": zNew };
+    }
+    function length(vector) {
+        return Math.sqrt(vector["X"] * vector["X"] + vector["Y"] * vector["Y"] + vector["Z"] * vector["Z"]);
+    }
+    function distanceBetweenPoints(pointOne, pointTwo) {
+        return length(vectorBetweenPoints(pointOne, pointTwo));
+    }
+    function vectorScale(vector, scalar) {
+        return { "X": vector["X"] * scalar, "Y": vector["Y"] * scalar, "Z": vector["Z"] * scalar };
+    }
+    function vectorScaleToLength(vector, scalar) {
+        return vectorScale(vector, (scalar / length(vector)));
+    }
+    function vectorAdd(vectorOne, vectorTwo) {
+        return {
+            "X": vectorOne["X"] + vectorTwo["X"],
+            "Y": vectorOne["Y"] + vectorTwo["Y"],
+            "Z": vectorOne["Z"] + vectorTwo["Z"]
+        };
+    }
+    function vectorBetweenPoints(pointOne, pointTwo) {
+        return vectorAdd(pointTwo, vectorScale(pointOne, -1));
+    }
+    function normalToPlane(pointOne, pointTwo, pointThree) {
+        vectorOne = vectorAdd(pointTwo, vectorScale(pointOne, -1));
+        vectorTwo = vectorAdd(pointThree, vectorScale(pointOne, -1));
+        return cross(vectorOne, vectorTwo);
+    }
+    function normalToPlaneFromOne(pointOne, pointTwo, pointThree) {
+        var normal = normalToPlane(pointOne, pointTwo, pointThree);
+        return vectorAdd(pointOne, normal);
+    }
+    function makeArc(percent) {
+
+        var xOne = parseInt(document.getElementById("xOne").value);
+        var yOne = parseInt(document.getElementById("yOne").value);
+        var zOne = parseInt(document.getElementById("zOne").value);
+        var aOneOne = parseInt(document.getElementById("aOneOne").value);
+        var bOneOne = parseInt(document.getElementById("bOneOne").value);
+        var cOneOne = parseInt(document.getElementById("cOneOne").value);
+        var aOneTwo = parseInt(document.getElementById("aOneTwo").value);
+        var bOneTwo = parseInt(document.getElementById("bOneTwo").value);
+        var cOneTwo = parseInt(document.getElementById("cOneTwo").value);
+
+        var xTwo = parseInt(document.getElementById("xTwo").value);
+        var yTwo = parseInt(document.getElementById("yTwo").value);
+        var zTwo = parseInt(document.getElementById("zTwo").value);
+        var aTwoOne = parseInt(document.getElementById("aTwoOne").value);
+        var bTwoOne = parseInt(document.getElementById("bTwoOne").value);
+        var cTwoOne = parseInt(document.getElementById("cTwoOne").value);
+        var aTwoTwo = parseInt(document.getElementById("aTwoTwo").value);
+        var bTwoTwo = parseInt(document.getElementById("bTwoTwo").value);
+        var cTwoTwo = parseInt(document.getElementById("cTwoTwo").value);
+
+        pointOne = { "X": xOne, "Y": yOne, "Z": zOne };
+        pointTwo = { "X": xTwo, "Y": yTwo, "Z": zTwo };
+        xM = (pointOne["X"] + pointTwo["X"]) / 2;
+        yM = (pointOne["Y"] + pointTwo["Y"]) / 2;
+        zM = (pointOne["Z"] + pointTwo["Z"]) / 2;
+        var midPoint = { "X": xM, "Y": yM, "Z": zM };
+        var midToOne = vectorAdd(pointOne, vectorScale(midPoint, -1));
+        var centerFinder = cross({ "X": 0, "Y": 1, "Z": 0 }, midToOne);
+        var cFLength = length(centerFinder);
+        if (cFLength == 0) {
+            alert("Can't create an arc in this direction");
+            return;
+        }
+        var angle = Math.PI * percent;
+        var cToMDistance;
+        if (angle == .5) {
+            cToMDistance = 0;
+        } else {
+            cToMDistance = length(midToOne) / Math.tan(angle);
+        }
+        var midPointToCenter = vectorScaleToLength(centerFinder, cToMDistance);
+        var center = vectorAdd(midPoint, midPointToCenter);
+        var radius = distanceBetweenPoints(pointOne, center);
+        var arcMidPoint = vectorAdd(center, vectorScaleToLength(centerFinder, -1 * radius));
+        $("input[name=\"xThree\"]").val(Math.round(arcMidPoint["X"]));
+        $("input[name=\"yThree\"]").val(Math.round(arcMidPoint["Y"]));
+        $("input[name=\"zThree\"]").val(Math.round(arcMidPoint["Z"]));
+
+        var xThree = parseInt(document.getElementById("xThree").value);
+        var yThree = parseInt(document.getElementById("yThree").value);
+        var zThree = parseInt(document.getElementById("zThree").value);
+
+        pointThree = { "X": xThree, "Y": yThree, "Z": zThree };
+        var oneThreeGuides = setGuides(pointOne, pointThree, center);
+        $("input[name=\"aOneOne\"]").val(Math.round(oneThreeGuides["guideOne"]["X"]));
+        $("input[name=\"bOneOne\"]").val(Math.round(oneThreeGuides["guideOne"]["Y"]));
+        $("input[name=\"cOneOne\"]").val(Math.round(oneThreeGuides["guideOne"]["Z"]));
+        $("input[name=\"aThreeOne\"]").val(Math.round(oneThreeGuides["guideTwo"]["X"]));
+        $("input[name=\"bThreeOne\"]").val(Math.round(oneThreeGuides["guideTwo"]["Y"]));
+        $("input[name=\"cThreeOne\"]").val(Math.round(oneThreeGuides["guideTwo"]["Z"]));
+        var ThreeTwoGuides = setGuides(pointThree, pointTwo, center);
+        $("input[name=\"aTwoOne\"]").val(Math.round(ThreeTwoGuides["guideTwo"]["X"]));
+        $("input[name=\"bTwoOne\"]").val(Math.round(ThreeTwoGuides["guideTwo"]["Y"]));
+        $("input[name=\"cTwoOne\"]").val(Math.round(ThreeTwoGuides["guideTwo"]["Z"]));
+        $("input[name=\"aThreeTwo\"]").val(Math.round(ThreeTwoGuides["guideOne"]["X"]));
+        $("input[name=\"bThreeTwo\"]").val(Math.round(ThreeTwoGuides["guideOne"]["Y"]));
+        $("input[name=\"cThreeTwo\"]").val(Math.round(ThreeTwoGuides["guideOne"]["Z"]));
+        redraw();
+    }
+    function setGuides(pointOne, pointTwo, center) {
+        xM = (pointOne["X"] + pointTwo["X"]) / 2;
+        yM = (pointOne["Y"] + pointTwo["Y"]) / 2;
+        zM = (pointOne["Z"] + pointTwo["Z"]) / 2;
+        guideOneNormal = normalToPlaneFromOne(pointOne, center, pointTwo);
+        guideTwoNormal = normalToPlaneFromOne(pointTwo, pointOne, center);
+        guideOneDirection = normalToPlane(pointOne, center, guideOneNormal);
+        guideTwoDirection = normalToPlane(pointTwo, guideTwoNormal, center);
+        guideOneDirection = vectorScaleToLength(guideOneDirection, 1);
+        guideTwoDirection = vectorScaleToLength(guideTwoDirection, 1);
+        var midPoint = { "X": xM, "Y": yM, "Z": zM };
+        var centerToMid = vectorAdd(midPoint, vectorScale(center, -1));
+        var radius = length(vectorAdd(pointOne, vectorScale(center, -1)));
+        var centerToArcMid = vectorScaleToLength(centerToMid, radius);
+        var arcCenter = vectorAdd(center, centerToArcMid);
+        var guideScale;
+        var zFound;
+        if (pointOne["X"] != pointTwo["X"]) {
+            guideScale = (arcCenter["Z"] - pointOne["Z"] - .25 * ((-3 * pointOne["Z"]) + (1 * pointTwo["Z"]) + (2 * pointTwo["Z"])) - .125 * ((2 * pointOne["Z"]) + (-1 * pointTwo["Z"]) + (-1 * pointTwo["Z"]))) / (.5 * (3 * guideOneDirection["Z"]) + .25 * (-6 * guideOneDirection["Z"] + 3 * guideTwoDirection["Z"]) + .125 * (3 * guideOneDirection["Z"] - 3 * guideTwoDirection["Z"]))
+
+            //Test calculations
+            zFound = ((1 * pointOne["Z"])) + .5 * ((3 * guideOneDirection["Z"] * guideScale)) + .25 * ((-6 * guideOneDirection["Z"] * guideScale) + (-3 * pointOne["Z"]) + (1 * pointTwo["Z"]) + (2 * pointTwo["Z"]) + (3 * guideTwoDirection["Z"] * guideScale)) + .125 * ((3 * guideOneDirection["Z"] * guideScale) + (2 * pointOne["Z"]) + (-1 * pointTwo["Z"]) + (-1 * pointTwo["Z"]) + (-3 * guideTwoDirection["Z"] * guideScale))
+
+        }
+        if (Infinity == guideScale) {
+            guideScale = (arcCenter["X"] - pointOne["X"] - .25 * ((-3 * pointOne["X"]) + (1 * pointTwo["X"]) + (2 * pointTwo["X"])) - .125 * ((2 * pointOne["X"]) + (-1 * pointTwo["X"]) + (-1 * pointTwo["X"]))) / (.5 * 3 * guideOneDirection["X"] - .25 * 6 * guideOneDirection["X"] + 3 * guideTwoDirection["X"] + 3 * guideOneDirection["X"] - 3 * guideTwoDirection["X"]);
+        }
+        guideOneDirection = vectorScaleToLength(guideOneDirection, guideScale);
+        guideTwoDirection = vectorScaleToLength(guideTwoDirection, guideScale);
+        return { "guideOne": guideOneDirection, "guideTwo": guideTwoDirection };
+
+    }
+    function testLength(xOne, yOne, zOne, xTwo, yTwo, zTwo) {
+        pointOne = { "X": xOne, "Y": yOne, "Z": zOne };
+        pointTwo = { "X": xTwo, "Y": yTwo, "Z": zTwo };
+        return distanceBetweenPoints(pointOne, pointTwo);
+    }
+    $(".coord").change(function () { redraw(); });
+    redraw();
+</script>
+
